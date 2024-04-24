@@ -1,0 +1,53 @@
+310. Minimum Height Trees
+class Solution {
+public:
+//  ****** Topological Sort based
+//   ******* Try for finding central node ----> So start from the leaf nodes
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+    unordered_map<int , vector<int>>adjlist;
+    vector<int>indegree(n);
+
+    if(n == 1) return {0};
+    for(auto edge : edges){
+        int v = edge[0];
+        int u = edge[1];
+        indegree[v]++;
+        indegree[u]++;
+        adjlist[v].push_back(u);
+        adjlist[u].push_back(v);
+    }
+    queue<int>q;
+    for(int i = 0; i<n; i++){
+        if(indegree[i] == 1){
+            q.push(i);
+        }
+    }
+
+    while(n > 2){
+        int s = q.size();
+        n -= s;
+        while(s--){
+            int u = q.front();
+            q.pop();  
+            for(auto t : adjlist[u]){
+                indegree[t]--;
+                if(indegree[t] == 1){
+                    q.push(t);
+                }
+            }
+        }
+    }
+
+    vector<int>result;
+    while(!q.empty()){
+        int u = q.front();
+        q.pop();
+        result.push_back(u);
+    }
+
+    return result;
+    }
+};
+
+T.C ==> (O+E)
+S.C ==> (O+E)
