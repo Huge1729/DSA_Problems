@@ -1,0 +1,27 @@
+1289. Minimum Falling Path Sum II
+
+class Solution {
+public:
+    int dfs(int i , int j, int n, vector<vector<int>>&grid  , vector<vector<int>>&dist){
+    if(i<0 || i>=n || j<0 || j>=n ) return 1e9;
+    if(i==n-1) return grid[i][j];
+    if(dist[i][j] != 1e9) return dist[i][j];
+
+    for(int y = 0; y < n; y++){
+        if(y != j){
+            dist[i][j] = min(dist[i][j] , dfs(i+1 , y , n , grid , dist) + grid[i][j]) ;
+        }
+    }
+    return  dist[i][j];
+}
+    int ans = 1e9;
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+       int n = matrix.size();
+       vector<vector<int>>dist(n, vector<int>(n,1e9));
+       for(int i=0; i<n; i++){
+           int val = dfs(0,i,n,matrix,dist);
+           ans = min(val , ans);
+       }
+       return ans;
+    }
+};
