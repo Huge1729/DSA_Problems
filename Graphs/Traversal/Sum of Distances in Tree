@@ -1,0 +1,147 @@
+834. Sum of Distances in Tree
+
+T.C ----> O(N)
+class Solution {
+public:
+long result_base_node = 0;
+    vector<int> count;
+    int N;
+    int dfsBase(unordered_map<int, vector<int>> &adj, int curr_node, int prev_node, int curr_depth) {
+        int total_node = 1;
+        
+        result_base_node += curr_depth;
+        
+        for(int &child : adj[curr_node]) {
+            if(child == prev_node)
+                continue;
+            
+            total_node += dfsBase(adj, child, curr_node, curr_depth+1);
+        }
+        
+        //store count of subtrees of each node
+        count[curr_node] = total_node;
+        
+        return total_node;
+    }
+    
+    void DFS(unordered_map<int, vector<int>> &adj, int parent_node, int prev_node, vector<int>& result) {
+        
+        for(int &child : adj[parent_node]) {
+            if(child == prev_node)
+                continue;
+            
+            result[child] = result[parent_node] - count[child] + (N - count[child]);
+            DFS(adj, child, parent_node, result);
+        }
+        
+    }
+    
+    vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        unordered_map<int, vector<int>> adj;
+        N = n;
+        count.resize(n, 0);
+        for(auto &vec : edges) {
+            int u = vec[0];
+            int v = vec[1];
+            
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        
+        
+        result_base_node = 0;
+        
+        dfsBase(adj, 0, -1, 0);
+        
+        vector<int> result(n, 0);
+        
+        result[0] = result_base_node;
+        
+        DFS(adj, 0, -1, result);
+        
+        return result;
+
+    }
+};
+
+
+
+// ************ Simple Multi Sourse  BFS ********(TLE)----->(O(N^2))
+// vector<int>result(n);
+//         unordered_map<int, vector<int>>adjlist(n);
+//         for(auto edge : edges){
+//             int u = edge[0];
+//             int v = edge[1];
+//             adjlist[u].push_back(v);
+//             adjlist[v].push_back(u);
+//         }
+
+//         for(int i = 0; i<n; i++){
+//             vector<int>visited(n,0);
+//             vector<int>dist(n,1e9);
+            
+
+//             queue<int>q;
+//             q.push(i);
+//             dist[i] = 0;
+            
+//             while(!q.empty()){
+//                 int s = q.size();
+//                 while(s--){
+//                     int v = q.front();
+//                     visited[v] = 1;
+//                     q.pop();
+//                     for(auto node : adjlist[v]){
+//                         if(dist[node] > dist[v] + 1){
+//                             dist[node] = dist[v] + 1;
+//                         }
+//                         if(visited[node] == 0){
+//                             q.push(node);
+//                         }
+//                     }
+//                 }
+//             }
+
+//             int count = 0;
+//             for(int i = 0; i<n; i++){
+//                 count += dist[i];
+//             }
+
+//             result[i] = (count); 
+
+//         }
+//         return result;
+
+// ***********************************************(TLE)-------->O(N^3)
+// vector<vector<int>>matrix(n , vector<int>(n,1e9));
+
+//         for(auto edge : edges){
+//             int v = edge[0];
+//             int u = edge[1];
+//             matrix[v][u] = 1;
+//             matrix[u][v] = 1; 
+//             matrix[v][v] = 0;
+//             matrix[u][u] = 0;
+//         }
+
+//         for(int k = 0; k<n; k++){
+//             for(int i = 0; i<n; i++){
+//                 for(int j = 0; j<n; j++){
+//                     matrix[i][j] = min(matrix[i][j] , matrix[i][k] + matrix[k][j]);
+//                 }
+//             }
+//         }
+
+//         vector<int>result(n, 0);
+//         for(int i = 0; i < n; i++){
+//             int count = 0;
+//             for(int j = 0 ; j < n; j++){
+//                 count += matrix[i][j];
+//             }
+
+//             if(count >= 1e9){
+//                 count = 0;
+//             }
+//             result[i] = count;
+//         }
+//         return result;
