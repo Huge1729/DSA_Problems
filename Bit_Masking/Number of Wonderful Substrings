@@ -1,0 +1,31 @@
+1915. Number of Wonderful Substrings
+
+class Solution {
+public:
+    typedef long long ll;
+    long long wonderfulSubstrings(string word) {
+        unordered_map<ll , ll>mp;    // Store the value of all xor 
+        mp[0] = 1;    // set 0000 is already present and count is 1 
+        ll curr_xor = 0;
+        ll result = 0;
+        
+        for(auto ch : word){
+           int shift = ch - 'a';   // a----0001 , b ---- 0010, c----0100
+           curr_xor = curr_xor ^ (1 << shift);
+
+           result += mp[curr_xor];
+           // This for loop for check only even numbers of letter present or not 
+
+           for(char ch1 = 'a'; ch1 <= 'j'; ch1++){
+            // this for loop check one odd number is preseent or not..
+            int shift = ch1 - 'a';   // a----0001 , b ---- 0010, c----0100
+            ll check_xor = curr_xor ^ (1 << shift);
+            result += mp[check_xor];
+           }
+           
+           mp[curr_xor]++;
+        }
+
+        return result;
+    }
+};
