@@ -1,0 +1,42 @@
+3144. Minimum Substring Partition of Equal Character Frequency
+
+class Solution {
+public:
+
+T.C---> O(N*(N*26)) ==> O(N^2)
+
+int solve(string &s , int i, vector<int>&dp){
+    if(i < 0) {
+        return 0;
+    }
+
+    if(dp[i] != -1) return dp[i];
+
+    int freq[26] = {0};
+    int ans = 1e5;
+
+    for(int j = i; j >= 0; j--){
+        freq[s[j] - 'a'] ++;
+        int minFreq = 1e5; 
+        int maxFreq = 0;
+
+        for(int k = 0; k < 26; k++){
+            if(freq[k]){
+                minFreq = min(minFreq , freq[k]);
+                maxFreq = max(maxFreq , freq[k]);
+            }
+        }
+
+        if(minFreq == maxFreq){
+            ans = min(ans , 1 + solve(s , j - 1 , dp));
+        }
+    }
+
+    return dp[i] = ans;
+}
+    int minimumSubstringsInPartition(string s) {
+        int n = s.length();
+        vector<int>dp(n , -1);
+        return solve(s , n-1,dp);
+    }
+};
