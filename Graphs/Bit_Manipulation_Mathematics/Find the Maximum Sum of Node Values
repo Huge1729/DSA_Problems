@@ -1,0 +1,35 @@
+3068. Find the Maximum Sum of Node Values
+
+
+#include<bits/stdc++.h>
+class Solution {
+public:
+typedef long long ll;
+    long long maximumValueSum(vector<int>& nums, int k, vector<vector<int>>& edges) {
+        ll sum = 0;
+        ll min_loss = INT_MAX;
+        ll count = 0;
+
+        for(ll num : nums){
+            if((num^k) > num){
+                count++;
+                sum += (num^k);
+            }
+            else{
+                sum += num;
+            }
+
+            ll val = abs((num^k) - num);
+
+            min_loss = min(min_loss , val);
+        }
+
+        if(count % 2 != 0){
+            return sum - min_loss;
+        }
+
+        return sum;
+
+        
+    }
+};
