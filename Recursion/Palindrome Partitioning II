@@ -1,0 +1,44 @@
+132. Palindrome Partitioning II
+
+// Only (32/36) test case running 
+// Memory limit exceeded
+
+
+class Solution {
+public:
+
+// int min_cost = INT_MAX;
+bool check(string st){
+    // cout<<st<<endl;
+    string st_ = st;
+    reverse(st.begin() , st.end());
+    return (st_ == st); 
+}
+
+int solve(int j , string s , vector<int>&dp){
+
+    if(j == s.length()){
+       return 0;
+    }
+
+    if(dp[j] != -1) return dp[j];
+    
+    int min_cost = INT_MAX; 
+
+    for(int i = j; i<s.length(); i++){
+
+        if(check(s.substr(j, i-j+1))){
+
+            min_cost = min(min_cost , (1 + solve(i+1 , s, dp)));
+
+        }
+    }
+    return dp[j] = min_cost ;
+}
+
+    int minCut(string s) {
+        vector<int>dp(s.length(), -1);
+        return solve(0 , s , dp) - 1;
+        //  A | B | C ----> third partition auto maticclly occur and it would be     plaindrome for sure
+    }
+};
