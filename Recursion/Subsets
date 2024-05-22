@@ -1,0 +1,29 @@
+78. Subsets
+
+class Solution {
+public:
+void solve(int i , vector<int>nums , vector<int>&subset , set<vector<int>>&s){
+    
+    s.insert(subset);
+
+    for(int j = i ; j < nums.size(); j++){
+
+        subset.push_back(nums[j]);
+
+        solve(j+1 , nums , subset ,s);
+
+        subset.pop_back();
+    }
+
+}
+    vector<vector<int>> subsets(vector<int>& nums) {
+        set<vector<int>>st;
+        vector<int>subset;
+
+        solve(0, nums , subset , st);
+
+        vector<vector<int>>ans(st.begin(), st.end());
+        // vector<int> vc(st.begin(), st.end());
+        return ans;    
+    }
+};
