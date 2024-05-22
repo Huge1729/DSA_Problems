@@ -1,0 +1,42 @@
+131. Palindrome Partitioning
+
+
+class Solution {
+public:
+
+// (2^n * n)
+
+vector<vector<string>>ans;
+vector<string>temp;
+
+bool check(string st){
+    cout<<st<<endl;
+    string st_ = st;
+    reverse(st.begin() , st.end());
+    return (st_ == st); 
+}
+
+void solve(int j , string s){
+
+    if(j >= s.length()){
+        ans.push_back(temp);
+    }
+
+    for(int i = j; i<s.length(); i++){
+
+        if(check(s.substr(j, i-j+1))){
+
+            temp.push_back(s.substr(j,i-j+1));
+
+            solve(i+1 , s);
+
+            temp.pop_back();
+        }
+    }
+}
+
+    vector<vector<string>> partition(string s) {
+        solve(0, s);
+        return ans;
+    }
+};
