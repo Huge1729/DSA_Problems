@@ -1,0 +1,91 @@
+
+2597. The Number of Beautiful Subsets
+
+Approach : 1 ----> 
+
+T.C ---> O(2^n * logn)
+
+class Solution {
+public:
+
+    int ans = 0;
+
+    bool isSelect(int val, int k, const vector<int> &result) {
+        bool search = binary_search(result.begin(), result.end(), val - k);
+        return !search;
+    }
+
+
+    void bt(const vector<int>& nums, int k, int index, vector<int> &result) {
+        if(index == nums.size()) {
+            ans++;
+            return;
+        }
+
+        int val = nums[index];
+        bool select = isSelect(val, k, result);
+        if(select) {
+            result.push_back(val);
+            bt(nums, k, index + 1, result);
+            result.pop_back();
+        }
+
+        bt(nums, k, index + 1, result);
+    }
+
+    int beautifulSubsets(vector<int>& nums, int k) {
+
+        std::sort(nums.begin(), nums.end());
+
+        vector<int> result;
+        int index = 0;
+        bt(nums, k, index, result);
+
+        return ans - 1;
+    }
+};
+
+
+Approach : 2 -------> 
+
+T.C -- > O(2^N*(O(20))
+
+class Solution {
+public:
+vector<int> subset ;
+int count = 0;
+
+bool isPossible(vector<int>subset , int k){
+    for(int i = 0; i<subset.size(); i++){
+        for(int j = 0; j < subset.size(); j++){
+            if((i != j) && (subset[j] - subset[i] == k)){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void solve(int i , vector<int>&nums , int k ,  int n){
+
+    if( subset.size() > 0 && isPossible(subset , k)){
+        count++;
+    }
+
+    for(int j = i; j < n; j++){
+        subset.push_back(nums[j]);
+
+        solve(j+1 , nums , k , n);
+
+        subset.pop_back();
+
+    }
+}
+
+    int beautifulSubsets(vector<int>& nums, int k) {
+        int n = nums.size();
+        solve(0, nums , k , n);   
+
+        return count;     
+    }
+};
