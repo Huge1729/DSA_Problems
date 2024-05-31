@@ -1,0 +1,33 @@
+260. Single Number III
+
+
+class Solution {
+public:
+    vector<int> singleNumber(vector<int>& nums) {
+        long long  x = 0;
+        // find cummulative Xor
+        for(auto num : nums){
+            x = x ^ num;
+        }
+        // find mask bit as we have to recover two element from the whole xor
+        // --> 011 (3)
+        // --> 101 (5)
+        // --> 110 (6)
+        // here 1st bit is set in xor iska mtlb inko alag krne ke liye mask nikalo like (010) then and krdo if and_mask is zero then in one group else in second group
+        long long  mask = (x & (-1*x));
+
+        int group1 = 0;
+        int group2 = 0;
+
+        for(auto num : nums){
+            if(mask & num){
+                group1 ^= num;
+            }
+            else{
+                group2 ^= num;
+            }
+        }
+        
+        return {group1 , group2};
+    }
+};
