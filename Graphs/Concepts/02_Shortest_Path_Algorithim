@@ -1,0 +1,318 @@
+ 1. Shortest Distance of each node form a src in UDG
+
+class Solution {
+  public:
+    vector<int> shortestPath(vector<vector<int>>& edges, int n,int M, int src){
+        // code here
+        vector<vector<int>> adj(n);
+        for(int i = 0; i < edges.size(); i++){
+            int u = edges[i][0];
+            int v = edges[i][1];
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+
+        // Initialize distance vector
+        vector<int> dist(n, 1e9);
+        dist[src] = 0;
+
+        // Use a priority queue to implement Dijkstra's algorithm
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq; 
+        pq.push({0, src});  // {distance, node}
+
+        while(!pq.empty()){
+            auto top = pq.top();
+            pq.pop();
+            int node = top.second;
+            int currDist = top.first;
+
+            for(auto neighbor : adj[node]){
+                if(currDist + 1 < dist[neighbor]){
+                    dist[neighbor] = currDist + 1;
+                    pq.push({dist[neighbor], neighbor});
+                }
+            }
+        }
+
+        // Replace 1e9 with -1 for nodes that are unreachable
+        for(int i = 0; i < dist.size(); i++){
+            if(dist[i] == 1e9) dist[i] = -1;
+        }
+
+        return dist;
+    }
+};
+
+2. Shortest Distance of each node form a src in Directed Graph
+
+#include<bits/stdc++.h>
+using namespace std;
+class Solution {
+  private:
+    void topoSort(int node, vector < pair < int, int >> adj[],
+      int vis[], stack < int > & st) {
+      //This is the function to implement Topological sort. 
+      vis[node] = 1;
+      for (auto it: adj[node]) {
+        int v = it.first;
+        if (!vis[v]) {
+          topoSort(v, adj, vis, st);
+        }
+      }
+      st.push(node);
+    }
+  public:
+    vector < int > shortestPath(int N, int M, vector < vector < int >> & edges) {
+
+      //We create a graph first in the form of an adjacency list.
+      vector < pair < int, int >> adj[N];
+      for (int i = 0; i < M; i++) {
+        int u = edges[i][0];
+        int v = edges[i][1];
+        int wt = edges[i][2];
+        adj[u].push_back({v, wt}); 
+      }
+      // A visited array is created with initially 
+      // all the nodes marked as unvisited (0).
+      int vis[N] = {
+        0
+      };
+      //Now, we perform topo sort using DFS technique 
+      //and store the result in the stack st.
+      stack < int > st;
+      for (int i = 0; i < N; i++) {
+        if (!vis[i]) {
+          topoSort(i, adj, vis, st);
+        }
+      }
+      //Further, we declare a vector ‘dist’ in which we update the value of the nodes’
+      //distance from the source vertex after relaxation of a particular node.
+
+      vector < int > dist(N);
+      for (int i = 0; i < N; i++) {
+        dist[i] = 1e9;
+      }
+
+      dist[0] = 0;
+      while (!st.empty()) {
+        int node = st.top();
+        st.pop();
+
+        for (auto it: adj[node]) {
+          int v = it.first;
+          int wt = it.second;
+
+          if (dist[node] + wt < dist[v]) {
+            dist[v] = wt + dist[node];
+          }
+        }
+      }
+
+      for (int i = 0; i < N; i++) {
+        if (dist[i] == 1e9) dist[i] = -1;
+      }
+      return dist;
+    }
+};
+
+3. Dijkastra Algorithim using Set
+#include<bits/stdc++.h>
+using namespace std;
+
+class Solution
+{
+	public:
+	  //Function to find the shortest distance of all the vertices
+    //from the source vertex S.
+    vector <int> dijkstra(int V, vector<vector<int>> adj[], int S)
+    {
+        // Create a set ds for storing the nodes as a pair {dist,node}
+        // where dist is the distance from source to the node.
+        // set stores the nodes in ascending order of the distances 
+        set<pair<int,int>> st; 
+
+        // Initialising dist list with a large number to
+        // indicate the nodes are unvisited initially.
+        // This list contains distance from source to the nodes.
+        vector<int> dist(V, 1e9); 
+        
+        st.insert({0, S}); 
+
+        // Source initialised with dist=0
+        dist[S] = 0;
+        
+        // Now, erase the minimum distance node first from the set
+        // and traverse for all its adjacent nodes.
+        while(!st.empty()) {
+            auto it = *(st.begin()); 
+            int node = it.second; 
+            int dis = it.first; 
+            st.erase(it); 
+            
+            // Check for all adjacent nodes of the erased
+            // element whether the prev dist is larger than current or not.
+            for(auto it : adj[node]) {
+                int adjNode = it[0]; 
+                int edgW = it[1]; 
+                
+                if(dis + edgW < dist[adjNode]) {
+                    // erase if it was visited previously at 
+                    // a greater cost.                                 ?????????????????????????????????????????????
+                    if(dist[adjNode] != 1e9) 
+                        st.erase({dist[adjNode], adjNode}); 
+                        
+                    // If current distance is smaller,
+                    // push it into the queue
+                    dist[adjNode] = dis + edgW; 
+                    st.insert({dist[adjNode], adjNode}); 
+                 }
+            }
+        }
+        // Return the list containing shortest distances
+        // from source to all the nodes.
+        return dist; 
+    }
+};
+
+USING PRIORITY QUEUE
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution
+{
+public:
+    // Function to find the shortest distance of all the vertices
+    // from the source vertex S.
+    vector<int> dijkstra(int V, vector<vector<int>> adj[], int S)
+    {
+
+        // Create a priority queue for storing the nodes as a pair {dist,node}
+        // where dist is the distance from source to the node. 
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+        // Initialising distTo list with a large number to
+        // indicate the nodes are unvisited initially.
+        // This list contains distance from source to the nodes.
+        vector<int> distTo(V, INT_MAX);
+
+        // Source initialised with dist=0.
+        distTo[S] = 0;
+        pq.push({0, S});
+
+        // Now, pop the minimum distance node first from the min-heap
+        // and traverse for all its adjacent nodes.
+        while (!pq.empty())
+        {
+            int node = pq.top().second;
+            int dis = pq.top().first;
+            pq.pop();
+
+            // Check for all adjacent nodes of the popped out
+            // element whether the prev dist is larger than current or not.
+            for (auto it : adj[node])
+            {
+                int v = it[0];
+                int w = it[1];
+                if (dis + w < distTo[v])
+                {
+                    distTo[v] = dis + w;
+    
+                    // If current distance is smaller,
+                    // push it into the queue.
+                    pq.push({dis + w, v});
+                }
+            }
+        }
+        // Return the list containing shortest distances
+        // from source to all the nodes.
+        return distTo;
+    }
+};
+
+
+4. Bellmon Ford Algorithim -----(Given a negative weighted, directed and connected graph of V vertices and E edges)
+To apply this on negative edges in UDG we shold convert this into Directed Graph
+
+How to detect a negative cycle in the graph?
+We know if we keep on rotating inside a negative cycle, the path weight will be decreased in every iteration. 
+But according to our intuition, we should have minimized all the distances within N-1 iterations(that means, after N-1 iterations no relaxation of edges is possible). 
+In order to check the existence of a negative cycle, we will relax the edges one more time after the completion of N-1 iterations. 
+And if in that Nth iteration, it is found that further relaxation of any edge is possible, we can conclude that the graph has a negative cycle. 
+Thus, the Bellman-Ford algorithm detects negative cycles.
+
+class Solution {
+public:
+
+	vector<int> bellman_ford(int V, vector<vector<int>>& edges, int S) {
+		vector<int> dist(V, 1e8);
+		dist[S] = 0;
+		for (int i = 0; i < V - 1; i++) {
+			for (auto it : edges) {
+				int u = it[0];
+				int v = it[1];
+				int wt = it[2];
+				if (dist[u] != 1e8 && dist[u] + wt < dist[v]) {
+					dist[v] = dist[u] + wt;
+				}
+			}
+		}
+		// Nth relaxation to check negative cycle
+		for (auto it : edges) {
+			int u = it[0];
+			int v = it[1];
+			int wt = it[2];
+			if (dist[u] != 1e8 && dist[u] + wt < dist[v]) {
+				return { -1};
+			}
+		}
+
+
+		return dist;
+	}
+};
+
+5. Floyed Warshell Algorithim----(Multisourse , Directed , detect Negative Cycle also)
+
+Dijkstra's Shortest Path algorithm and Bellman-Ford algorithm are single-source shortest path algorithms 
+where we are given a single source node and are asked to find out the shortest path to every other node from that given source.
+But in the Floyd Warshall algorithm, we need to figure out the shortest distance from each node to every other node.
+
+Basically, the Floyd Warshall algorithm is a multi-source shortest path algorithm and it helps to detect negative cycles as well. 
+The shortest path between node u and v necessarily means the path(from u to v) for which the sum of the edge weights is minimum.
+
+What will happen if we will apply Dijkstra’s algorithm for this purpose?
+If the graph has a negative cycle: We cannot apply Dijkstra’s algorithm to the graph which contains a negative cycle. It will give TLE error in that case.
+If the graph does not contain a negative cycle: In this case, we will apply Dijkstra’s algorithm for every possible node to make it work like a multi-source shortest path algorithm like Floyd Warshall. 
+The time complexity of Floyd Warshall is O(V3)(Which we will discuss later in this article) whereas if we apply Dijkstra’s algorithm for the same purpose the time complexity reduces to O(V*(E*logV)) (where v = no. of vertices). 
+
+class Solution {
+public:
+	void shortest_distance(vector<vector<int>>&matrix) {
+		int n = matrix.size();
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (matrix[i][j] == -1) {
+					matrix[i][j] = 1e9;
+				}
+				if (i == j) matrix[i][j] = 0;
+			}
+		}
+
+		for (int k = 0; k < n; k++) {
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					matrix[i][j] = min(matrix[i][j], matrix[i][k] + matrix[k][j]);
+				}
+			}
+		}
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (matrix[i][j] == 1e9) {
+					matrix[i][j] = -1;
+				}
+			}
+		}
+	}
+};
+
