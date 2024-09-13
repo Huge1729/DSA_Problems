@@ -1,0 +1,148 @@
+1. Using Stack
+
+class Solution
+{
+	public:
+	//Function to return list containing vertices in Topological order. 
+	void solve(int V , vector<int>adj[], vector<int>&visited , stack<int>&st,int i){
+	    visited[i] = true;
+	    
+	    for(auto v : adj[i]){
+	        if(visited[v] == false){
+	            solve(V, adj ,visited , st ,v);
+	        }
+	    }
+	    st.push(i);
+	}
+	vector<int> topoSort(int V, vector<int> adj[]) 
+	{
+	    // code here
+	    stack<int>st;
+	    vector<int>visited(V , 0);
+	    for(int i = 0; i < V; i++){
+	        if(visited[i] == false){
+	            solve(V,adj,visited , st, i);
+	        }
+	        
+	    }
+	    
+	    vector<int>ans;
+	    while(!st.empty()){
+	        int u = st.top();
+	       // cout<<u<<" ";
+	        st.pop();
+	        ans.push_back(u);
+	    }
+	   // cout<<endl;
+	    return ans;
+	}
+};
+
+2. Using Indegree (Kahn's Algorithim)
+
+class Solution{
+public:
+
+    vector<int> topoSort(int V, vector<int> adj[]) 
+    {
+        // code here
+        int indegree[V]={0};
+        for(int i=0;i<V;i++){
+            for(auto it:adj[i]){  
+                indegree[it]++;
+            }
+        }
+        queue <int> q;
+        for(int i=0;i<V;i++){
+            if(indegree[i]==0){
+                q.push(i);
+            }
+        }
+        vector <int> topoAns;
+        while(!q.empty()){
+            int node=q.front();
+            q.pop();
+            topoAns.push_back(node);
+            
+            //adj
+            for(auto it:adj[node]){
+                indegree[it]--;
+                if(indegree[it]==0) q.push(it);
+            }
+            
+        }
+        return topoAns;
+    }
+};
+
+
+3. Cycle detection in Directed Graph (BFS)
+
+bool isCyclic(int V, vector<int> adj[]) {
+        vector<int>InDeg(V,0);
+        for(int i=0;i<V;i++)
+        {
+            for(int j=0;j<adj[i].size();j++)
+            InDeg[adj[i][j]]++;
+        }
+        int count=0;
+        queue<int> q;
+        for(int i=0;i<V;i++)
+        {
+            if(!InDeg[i])
+            q.push(i);
+        }
+        while(!q.empty())
+        {
+            int Node = q.front();
+            q.pop();
+            count++;
+            for(int i=0;i<adj[Node].size();i++)
+            {
+                InDeg[adj[Node][i]]--;
+                if(!InDeg[adj[Node][i]])
+                {
+                    q.push(adj[Node][i]);
+                }
+            }
+        }
+        return count!=V;
+
+4. Cycle Dectection Using DFS (Directed Graph)
+
+class Solution {
+    private boolean dfsCheck(int node, ArrayList<ArrayList<Integer>> adj, int vis[], int pathVis[]) {
+        vis[node] = 1; 
+        pathVis[node] = 1; 
+        
+        // traverse for adjacent nodes 
+        for(int it : adj.get(node)) {
+    
+            if(vis[it] == 0) {
+                if(dfsCheck(it, adj, vis, pathVis) == true) 
+                    return true; 
+            }
+            // if the node has been previously visited
+            // but it has to be visited on the same path 
+            else if(pathVis[it] == 1) {
+                return true; 
+            }
+        }
+        
+        pathVis[node] = 0; 
+        return false; 
+    }
+
+    // Function to detect cycle in a directed graph.
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        int vis[] = new int[V];
+        int pathVis[] = new int[V];
+        
+        for(int i = 0;i<V;i++) {
+            if(vis[i] == 0) {
+                if(dfsCheck(i, adj, vis, pathVis) == true) return true; 
+            }
+        }
+        return false; 
+    }
+ 
