@@ -1,38 +1,53 @@
 # Food Ordering Application
 
-## Entities
+# Entity Model 
 
-### User
-- **Attributes:**
-  - `username` (Primary Key)
-  - `password`
-  - `address`
+## 1. User
+- **username** (Primary Key)  
+- password  
+- address  
 
-### Vendor
-- **Attributes:**
-  - `vendorName` (Primary Key)
-  - `vendorLocation`
+## 2. Vendor
+- **vendorName** (Primary Key)  
+- vendorLocation  
 
-### Restaurant
-- **Attributes:**
-  - `restaurantName` (Primary Key)
+## 3. Restaurant
+- **restaurantName** (Primary Key)  
+- **vendorName** (Foreign Key referencing `Vendor.vendorName`)
 
-### MenuItem
-- **Attributes:**
-  - `name` (Primary Key)
-  - `price`
-  - `category`
+## 4. MenuItem
+- **name** (Primary Key)  
+- price  
+- category  
+- **restaurantName** (Foreign Key referencing `Restaurant.restaurantName`)
 
-### Order
-- **Attributes:**
-  - `orderID` (Primary Key)
-  - `totalPrice`
+## 5. Order
+- **orderID** (Primary Key)  
+- **username** (Foreign Key referencing `User.username`)  
+- totalPrice  
 
-### Payment
-- **Attributes:**
-  - `paymentID` (Primary Key)
-  - `amount`
-  - `paymentMethod`
+## 6. Payment
+- **paymentID** (Primary Key)  
+- **orderID** (Foreign Key referencing `Order.orderID`)  
+- amount  
+- paymentMethod  
+
+---
+
+## **Relationships**
+
+- **User → Order**: One-to-Many  
+  A user can place multiple orders.
+
+- **Order → Payment**: One-to-One  
+  Each order has a corresponding payment.
+
+- **Vendor → Restaurant**: One-to-Many  
+  A vendor manages multiple restaurants.
+
+- **Restaurant → MenuItem**: One-to-Many  
+  Each restaurant offers multiple menu items.
+
 
 ## Relationships
 
@@ -271,7 +286,7 @@ public:
         }
 
         Order order;
-        restaurant->displayMenu();
+        // restaurant->displayMenu();
         int itemNumber;
         cout << "Enter the item number to add to the order (0 to complete): ";
         while (cin >> itemNumber && itemNumber != 0) {
@@ -329,12 +344,14 @@ int main() {
     system.signup("john_doe", "password123", "123 Main St");
     system.login("john_doe", "password123");
 
-    // Browse Restaurants and Place Order
+    // Browse Restaurants 
     system.browseRestaurants();
-    system.placeOrder(restaurant1);
 
     // Filter and Sort Menu Example
     system.filterAndSortMenu(restaurant1);
+
+    // and Place Order
+    system.placeOrder(restaurant1);
 
     return 0;
 }
