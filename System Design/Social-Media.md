@@ -128,47 +128,56 @@ public:
 // === Post Class ===
 class Post {
 private:
+    static int nextId;  // Static variable to keep track of the next post ID
+    int post_id;        // Unique identifier for the post
     string content;
     int likes = 0;
     vector<string> comments;
 
 public:
-    Post(const string& c) : content(c) {}
+    Post(const string& c) : content(c) {
+        post_id = nextId++;  // Assign current ID and increment for next post
+    }
+
+    int getPostId() const { return post_id; }
 
     void likePost() { ++likes; }
 
     void addComment(const string& comment) { comments.push_back(comment); }
 
     void displayPost() {
-        cout << "Post: " << content << "\nLikes: " << likes << "\nComments:\n";
+        cout << "Post ID: " << post_id << "\nContent: " << content << "\nLikes: " << likes << "\nComments:\n";
         for (const string& comment : comments) {
             cout << "- " << comment << "\n";
         }
     }
 };
 
+// Initialize the static variable
+int Post::nextId = 1; // Starts IDs from 1
+
 // === Regular User Class: Inherits from User (Inheritance) ===
 class RegularUser : public User {
     vector<Post*> posts;  // List of posts created by the user
 
-public:
+public: 
     RegularUser(string uname, string pwd, string mail, string addr)
         : User(uname, pwd, mail, addr) {}
 
     void createPost(const string& content) override {
         Post* newPost = new Post(content);
         posts.push_back(newPost);
-        cout << username << " created a new post.\n";
+        cout << username << " created a new post with ID: " << newPost->getPostId() << ".\n";
     }
 
     void likePost(Post* post) {
         post->likePost();
-        cout << username << " liked the post.\n";
+        cout << username << " liked the post with ID: " << post->getPostId() << ".\n";
     }
 
     void commentOnPost(Post* post, const string& comment) {
         post->addComment(comment);
-        cout << username << " commented: " << comment << "\n";
+        cout << username << " commented: " << comment << " on post ID: " << post->getPostId() << ".\n";
     }
 };
 
@@ -198,13 +207,18 @@ public:
         users[user->getUsername()] = user;
         cout << user->getUsername() << " signed up successfully!\n";
     }
-
+ 
     User* login(const string& username, const string& password) {
-        if (users.find(username) != users.end()) {
-            cout << username << " logged in successfully!\n";
-            return users[username];
+        if (users.find(username) != users.end()) { // Check if the user exists
+            if (users[username]->getPassword() == password) { // Check if the password matches
+                cout << username << " logged in successfully!\n";
+                return users[username];
+            } else {
+                cout << "Invalid username or password.\n"; // Password mismatch
+                return nullptr;
+            }
         } else {
-            cout << "Invalid username or password.\n";
+            cout << "Invalid username or password.\n"; // User not found
             return nullptr;
         }
     }
@@ -217,7 +231,7 @@ int main() {
     // Create users
     AdminUser* admin = new AdminUser("admin", "admin123", "admin@mail.com", "Admin's House");
     RegularUser* john = new RegularUser("john_doe", "password123", "john@mail.com", "123 John St");
-    RegularUser* jane = new RegularUser("jane_doe", "password456", "456 Jane Ave");
+    RegularUser* jane = new RegularUser("jane_doe", "password456", "jane@mail.com", "456 Jane Ave");
 
     // Users sign up
     app.signup(admin);
@@ -238,41 +252,48 @@ int main() {
     // Admin creates an announcement
     admin->createPost("Welcome to the social media app!");
 
-    // Jane likes and comments on John's post
-    Post* post = new Post("Learning C++ OOP is fun!");  // Example post
-    jane->likePost(post);
-    jane->commentOnPost(post, "Indeed it is!");
+    // Example post for Jane to like and comment on
+    Post* examplePost = new Post("Learning C++ OOP is fun!"); 
+    jane->likePost(examplePost);
+    jane->commentOnPost(examplePost, "Indeed it is!");
 
-    // Display the post
-    post->displayPost();
+    // Display the example post
+    examplePost->displayPost();
 
     // View notifications for John and Jane
     john->viewNotifications();
     jane->viewNotifications();
 
+    // Cleanup allocated memory
+    delete examplePost;
+    delete admin;
+    delete john;
+    delete jane;
+
     return 0;
 }
+
 ```
 ### Expected output for the social media Application
 ```
+[?2004l
 admin signed up successfully!
 john_doe signed up successfully!
 jane_doe signed up successfully!
 john_doe logged in successfully!
-john_doe created a new post.
+john_doe created a new post with ID: 1.
 john_doe sent a friend request to jane_doe.
 jane_doe and john_doe are now friends.
 Admin admin posted: Welcome to the social media app!
-jane_doe liked the post.
-jane_doe commented: Indeed it is!
-Post: Learning C++ OOP is fun!
+jane_doe liked the post with ID: 2.
+jane_doe commented: Indeed it is! on post ID: 2.
+Post ID: 2
+Content: Learning C++ OOP is fun!
 Likes: 1
 Comments:
 - Indeed it is!
 
 Notifications for john_doe:
-- You are now friends with jane_doe
 
 Notifications for jane_doe:
 - You are now friends with john_doe
-
