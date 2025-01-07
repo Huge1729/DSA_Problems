@@ -1,0 +1,92 @@
+#include <iostream>
+#include <string>
+
+// Abstract base class for Notification
+class Notification {
+public:
+    virtual void sendNotification(const std::string& message, const std::string& recipient) = 0; // Pure virtual function
+    virtual ~Notification() {}
+};
+
+// Concrete class for Email Notification
+class EmailNotification : public Notification {
+public:
+    void sendNotification(const std::string& message, const std::string& recipient) override {
+        std::cout << "Sending Email to " << recipient << " with message: " << message << std::endl;
+        // Email sending logic (e.g., SMTP server interaction) would go here.
+    }
+};
+
+// Concrete class for SMS Notification
+class SMSNotification : public Notification {
+public:
+    void sendNotification(const std::string& message, const std::string& recipient) override {
+        std::cout << "Sending SMS to " << recipient << " with message: " << message << std::endl;
+        // SMS sending logic (e.g., using an SMS gateway API) would go here.
+    }
+};
+
+// Concrete class for Push Notification
+class PushNotification : public Notification {
+public:
+    void sendNotification(const std::string& message, const std::string& recipient) override {
+        std::cout << "Sending Push Notification to " << recipient << " with message: " << message << std::endl;
+        // Push notification sending logic (e.g., using Firebase Cloud Messaging API) would go here.
+    }
+};
+
+// Notification Manager class to handle notifications
+class NotificationManager {
+private:
+    Notification* notificationType;  // Reference to a Notification object
+
+public:
+    // Constructor accepts a Notification object
+    NotificationManager(Notification* type) : notificationType(type) {}
+
+    // Function to send a notification
+    void sendNotification(const std::string& message, const std::string& recipient) {
+        notificationType->sendNotification(message, recipient);
+    }
+
+    // Destructor to clean up dynamically allocated memory
+    ~NotificationManager() {
+        delete notificationType;  // Clean up dynamically allocated memory
+    }
+};
+
+int main() {
+    // Creating different notification types
+    Notification* email = new EmailNotification();
+    Notification* sms = new SMSNotification();
+    Notification* push = new PushNotification();
+
+    // Create Notification Manager objects for each notification type
+    NotificationManager emailManager(email);
+    NotificationManager smsManager(sms);
+    NotificationManager pushManager(push);
+
+    // Send notifications
+    std::cout << "\n--- Sending Email Notification ---\n";
+    emailManager.sendNotification("Your account has been activated.", "john.doe@example.com");
+
+    std::cout << "\n--- Sending SMS Notification ---\n";
+    smsManager.sendNotification("Your OTP is 123456.", "+1234567890");
+
+    std::cout << "\n--- Sending Push Notification ---\n";
+    pushManager.sendNotification("New message received!", "user_device_id_123");
+
+    return 0;
+}
+
+
+Output: 
+--- Sending Email Notification ---
+Sending Email to john.doe@example.com with message: Your account has been activated.
+
+--- Sending SMS Notification ---
+Sending SMS to +1234567890 with message: Your OTP is 123456.
+
+--- Sending Push Notification ---
+Sending Push Notification to user_device_id_123 with message: New message received!
+
