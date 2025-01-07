@@ -1,0 +1,125 @@
+Automated Parking Lot system: 
+
+#include <iostream>
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <semaphore.h>
+#include <chrono>
+
+using namespace std;
+
+class Car {
+public:
+    string carID;
+    Car(string id) : carID(id) {}
+};
+
+class ParkingLot {
+private:
+    int totalSlots;       // Total parking slots
+    vector<bool> slots;   // Vector representing the parking slots (true = occupied, false = empty)
+    sem_t availableSlots; // Semaphore to count available slots
+    mutex coutMutex;      // Mutex to ensure synchronized console output
+
+public:
+    ParkingLot(int size) : totalSlots(size), slots(size, false) {
+        sem_init(&availableSlots, 0, size); // Initialize semaphore with total number of slots
+    }
+
+    // Try to park a car if a slot is available
+    void parkCar(Car& car) {
+        coutMutex.lock();
+        cout << car.carID << " is looking for a parking slot." << endl;
+        coutMutex.unlock();
+
+        sem_wait(&availableSlots); // Decrease semaphore (wait for a slot)
+
+        for (int i = 0; i < totalSlots; ++i) {
+            if (!slots[i]) { // Find an empty slot
+                slots[i] = true; // Mark the slot as occupied
+                coutMutex.lock();
+                cout << car.carID << " parked in slot " << i + 1 << "." << endl;
+                coutMutex.unlock();
+                break;
+            }
+        }
+    }
+
+    // Leave the parking lot
+    void leaveParkingLot(Car& car) {
+        coutMutex.lock();
+        cout << car.carID << " is leaving the parking lot." << endl;
+        coutMutex.unlock();
+
+        for (int i = 0; i < totalSlots; ++i) {
+            if (slots[i]) { // Find the occupied slot
+                slots[i] = false; // Mark the slot as empty
+                sem_post(&availableSlots); // Increase semaphore (release the slot)
+                coutMutex.lock();
+                cout << car.carID << " left slot " << i + 1 << "." << endl;
+                coutMutex.unlock();
+                break;
+            }
+        }
+    }
+};
+
+void carThread(ParkingLot& parkingLot, Car& car) {
+    // Simulate a car looking for parking
+    parkingLot.parkCar(car);
+    this_thread::sleep_for(chrono::seconds(2)); // Stay parked for 2 seconds
+    parkingLot.leaveParkingLot(car);
+}
+
+int main() {
+    int numSlots = 5; // Define number of parking slots
+    ParkingLot parkingLot(numSlots); // Create a parking lot with the given number of slots
+
+    // Create cars with different IDs
+    Car car1("Car 1");
+    Car car2("Car 2");
+    Car car3("Car 3");
+    Car car4("Car 4");
+    Car car5("Car 5");
+    Car car6("Car 6");
+
+    // Launch multiple threads to simulate cars trying to park
+    thread t1(carThread, ref(parkingLot), ref(car1));
+    thread t2(carThread, ref(parkingLot), ref(car2));
+    thread t3(carThread, ref(parkingLot), ref(car3));
+    thread t4(carThread, ref(parkingLot), ref(car4));
+    thread t5(carThread, ref(parkingLot), ref(car5));
+    thread t6(carThread, ref(parkingLot), ref(car6));
+
+    // Wait for all threads to finish
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+    t5.join();
+    t6.join();
+
+    return 0;
+}
+
+
+Output: 
+Car 1 is looking for a parking slot.
+Car 1 parked in slot 1.
+Car 2 is looking for a parking slot.
+Car 2 parked in slot 2.
+Car 3 is looking for a parking slot.
+Car 3 parked in slot 3.
+Car 4 is looking for a parking slot.
+Car 4 parked in slot 4.
+Car 5 is looking for a parking slot.
+Car 5 parked in slot 5.
+Car 6 is looking for a parking slot.
+Car 6 is waiting for a slot...
+Car 1 is leaving the parking lot.
+Car 1 left slot 1.
+Car 6 parked in slot 1.
+Car 2 is leaving the parking lot.
+Car 2 left slot 2.
+...
