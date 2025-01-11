@@ -1,0 +1,118 @@
+1. Association (is-a)
+Definition: A "uses-a" relationship where one class uses another. This is the most general relationship and does not imply ownership.
+Example: A Teacher uses a Student.
+
+#include <iostream>
+#include <string>
+
+class Student {
+public:
+    std::string name;
+    Student(std::string studentName) : name(studentName) {}
+    void display() {
+        std::cout << "Student: " << name << std::endl;
+    }
+};
+
+class Teacher {
+public:
+    void teach(Student& student) {
+        std::cout << "Teaching student: " << student.name << std::endl;
+    }
+};
+
+int main() {
+    Student student("Alice");
+    Teacher teacher;
+
+    teacher.teach(student); // Teacher uses a Student
+    return 0;
+}
+****************************************************************** Aggregation ****************************************
+2. Aggregation
+Definition: A "has-a" relationship where one class contains another, but the contained object can exist independently.
+Example: A Department contains Professor objects, but professors can exist without a department.
+
+
+#include <iostream>
+#include <vector>
+#include <string>
+
+class Professor {
+public:
+    std::string name;
+    Professor(std::string profName) : name(profName) {}
+    void display() {
+        std::cout << "Professor: " << name << std::endl;
+    }
+};
+
+class Department {
+private:
+    std::string departmentName;
+    std::vector<Professor*> professors; // Aggregation: does not own Professors
+public:
+    Department(std::string deptName) : departmentName(deptName) {}
+
+    void addProfessor(Professor* professor) {
+        professors.push_back(professor);
+    }
+
+    void display() {
+        std::cout << "Department: " << departmentName << std::endl;
+        for (Professor* professor : professors) {
+            professor->display();
+        }
+    }
+};
+
+int main() {
+    Professor prof1("Dr. Smith");
+    Professor prof2("Dr. Johnson");
+
+    Department dept("Computer Science");
+    dept.addProfessor(&prof1); // Aggregation: Professors are referenced
+    dept.addProfessor(&prof2);
+
+    dept.display();
+
+    return 0;
+}
+
+****************************************************************** Composition  ****************************************
+3. Composition (part-of)
+Definition: A "has-a" relationship where one class contains another, and the contained object cannot exist independently (ownership).
+Example: A Car has an Engine, and the engine cannot exist without the car.
+#include <iostream>
+#include <string>
+
+class Engine {
+private:
+    std::string type;
+public:
+    Engine(std::string engineType) : type(engineType) {}
+    void display() {
+        std::cout << "Engine type: " << type << std::endl;
+    }
+};
+
+class Car {
+private:
+    std::string model;
+    Engine engine; // Composition: Car owns the Engine
+public:
+    Car(std::string carModel, std::string engineType) 
+        : model(carModel), engine(engineType) {}
+    
+    void display() {
+        std::cout << "Car model: " << model << std::endl;
+        engine.display();
+    }
+};
+
+int main() {
+    Car car("Tesla Model S", "Electric"); // Car owns the engine
+    car.display();
+
+    return 0;
+}
