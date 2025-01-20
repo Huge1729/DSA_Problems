@@ -36,6 +36,57 @@ void process_1() {
 }
 ************************************************************************** Producer-Consumer  ****************************************************************
 Producer-Consumer Pseudocode
+#include <iostream>
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
+using namespace std;
+
+std::mutex mtx;
+std::condition_variable cv;
+
+int max_size = 0; // Buffer max size
+std::vector<int> buffer;
+
+void producer(int val) {
+    while (val > 0) { // Produce until val reaches 0
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [] { return buffer.size() < max_size; }); // Wait until buffer is not full
+        cout << "Producer: " << val << endl;
+        buffer.push_back(val);
+        val--;
+        cv.notify_all(); // Notify all waiting threads
+    }
+}
+
+void consumer() {
+    while (true) {
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [] { return !buffer.empty(); }); // Wait until buffer is not empty
+        int x = buffer.back();
+        buffer.pop_back();
+        cout << "Consumer: " << x << endl;
+        cv.notify_all(); // Notify all waiting threads
+    }
+}
+
+int main() {
+    cout << "Enter the size of the buffer: ";
+    cin >> max_size;
+
+    // Start producer and consumer threads
+    std::thread t1(producer, 10); // Produce values starting from 10
+    std::thread t2(consumer);
+
+    t1.join();
+    t2.join();
+
+    return 0;
+}
+
+
 Variables Used:
 empty: Semaphore to track empty slots.
 full: Semaphore to track filled slots.
