@@ -163,6 +163,99 @@
 
 
 
+
+// #include <iostream>
+
+// using namespace std;
+
+// class Test {
+
+// public:
+
+//     Test(Test &t) {}
+
+//     Test() {}
+
+// };
+
+// Test fun() {
+
+//     cout << "fun() Called\n";
+
+//     Test t;
+
+//     return t;
+
+// }
+
+// int main() {
+
+//     Test t1;
+
+//     Test t2 = fun();
+
+//     return 0;
+
+// }
+
+
+// #include <iostream>
+
+// using namespace std;
+
+// class Abc {
+// public:
+//     Abc(int aa0): a(aa0) {}  // Corrected this line
+
+//     void show() { cout << "a = " << a << endl; }
+
+// private:
+//     int a;
+// };
+
+// class Xyz {
+// public:
+//     Xyz(int xx): x(xx) {}
+
+//     operator Abc() const { return Abc(x); }
+
+// private:
+//     int x;
+// };
+
+// void g(Abc abc) { abc.show(); }
+
+// int main() {
+//     Xyz xyz(10);
+//     g(xyz);  // Will convert xyz to Abc, showing "a = 10"
+//     g(20);   // Will call Abc constructor directly with 20, showing "a = 20"
+//     return 0;
+// }
+
+
+
+// #include <stdio.h>
+
+// enum OSState { Running = 1, Terminated = 0, Failed = 0};
+
+// int main() {
+//     printf("%d, %d %d", Running, Terminated, Failed);
+//     return 0;
+// }
+
+
+#include <iostream>
+
+void MyFunction(int a, int b = 40)
+{
+    std::cout << "a = " << a << " b = " << b << std::endl;
+}
+
+int main()
+{
+    MyFunction(20);
+    return 0;
+}
 #include <iostream>
 
 // union u {
@@ -416,6 +509,110 @@ void MyFunction(int a, int b = 40)
 int main()
 {
     MyFunction(20);
+    return 0;
+}
+
+
+// #include <iostream>
+// using namespace std;
+
+// union Data {
+//     int i;
+//     float f;
+//     char c;
+//     int j;
+// };
+
+// int main() {
+//     Data data;
+
+//     data.i = 42; // Write to the integer member
+//     cout << "Accessing `i`: " << data.i << endl;
+
+//     // Accessing a different member (float) without writing to it
+//     cout << "Accessing `f` (undefined behavior): " << data.f << endl;
+//     cout << "Accessing `c` (undefined behavior): " << data.c << endl;
+//     cout << "Accessing `i`: " << data.j << endl;
+    
+    
+//     data.c = 'A'; // Write to the char member
+//     cout << "Accessing `c`: " << data.c << endl;
+
+//     // Accessing `i` after writing to `c` (undefined behavior)
+//     cout << "Accessing `i` again (undefined behavior): " << data.i << endl;
+
+//     return 0;
+// }
+
+
+
+// enum color{
+//     red, green, yellow
+// };
+
+// int main() {
+//     color c;
+//     cout<<red<<endl;
+//     return 0;
+// }
+
+
+// #include <iostream>
+// using namespace std;
+
+// struct Empty {};
+
+// int main() {
+//     Empty e1, e2;
+//     cout << "Size of empty structure: " << sizeof(Empty) << " byte" << endl;
+//     cout << "Address of e1: " << &e1 << endl;
+//     cout << "Address of e1: " << sizeof(&e1) << endl;
+//     cout << "Address of e2: " << &e2 << endl;
+//     return 0;
+// }
+
+
+// #include<stdio.h>
+// int main()
+// {
+//     int arr[] = {10, 20, 30, 40, 50, 60};
+//     int *ptr1 = arr;
+//     int *ptr2 = arr + 5;
+//     printf("Number of elements between two pointer are: %d.", 
+//                                 (ptr2 - ptr1));
+//     printf("Number of bytes between two pointers are: %d",  
+//                               (char*)ptr2 - (char*) ptr1);
+//     return 0;
+// }
+
+// #include <stdio.h>
+
+// void fun(int **p) {  // Here, we take a pointer to the pointer.
+//     int q = 10;
+//     *p = &q;  // This modifies the original pointer p in main.
+// }
+
+// int main() {
+//     int r = 20;
+//     int *p = &r;  // p points to r.
+//     fun(&p);  // Pass the address of p (pointer to pointer).
+//     printf("%d", *p);  // This will print the value at *p, which is now pointing to q.
+//     return 0;
+// }
+
+
+
+#include <stdio.h>
+
+void fun(int *p) {
+    *p = 10;  // Modify the value that p points to
+}
+
+int main() {
+    int r = 20;
+    int *p = &r;  // p points to r
+    fun(p);  // Pass p (pointer to r) to fun
+    printf("%d", r);  // Prints the new value of r, which should be 10
     return 0;
 }
 
