@@ -618,4 +618,38 @@ int main() {
 
 
 
+// ################################## Function overloading achevied throgh the derived class 
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    void show(double a) {
+        cout << "Base class function" << endl;
+    }
+
+    void show(int a) {
+        cout << "Base class function with parameter: " << a << endl;
+    }
+};
+
+class Derived : private Base {
+public:
+    using Base::show;  
+    void show(double a) {
+        cout << "Derived class function with double: " << a << endl;
+    }
+};
+
+int main() {
+    Derived obj;
+    // Base obj;
+    obj.show(10);     // ❌ ERROR: Base class functions are hidden due to function name in Derived
+    obj.show(10.5);   // ✅ Calls Derived class function
+
+    return 0;
+}
+
+
+
 
